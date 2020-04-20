@@ -2,6 +2,7 @@ package com.ecommerce.microcommerce.web.controller;
 
 import com.ecommerce.microcommerce.dao.ProductDao;
 import com.ecommerce.microcommerce.model.Product;
+import com.ecommerce.microcommerce.web.exceptions.ProduitGratuitException;
 import com.ecommerce.microcommerce.web.exceptions.ProduitIntrouvableException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -70,8 +71,11 @@ public class ProductController {
 
     //ajouter un produit
     @PostMapping(value = "/Produits")
+    //j'ai supprimé la validation afin de pouvoir declencher mon exception
+    public ResponseEntity<Void> ajouterProduit(/*@Valid*/ @RequestBody Product product) {
 
-    public ResponseEntity<Void> ajouterProduit(@Valid @RequestBody Product product) {
+        if(product.getPrix()<=0)
+            throw new ProduitGratuitException(product.getPrix()+" € n'est pas un bon prix de vente! Merci de definir un prix >0. Nom du produit : "+ product.getNom());
 
         Product productAdded =  productDao.save(product);
 
@@ -95,7 +99,8 @@ public class ProductController {
 
     @PutMapping (value = "/Produits")
     public void updateProduit(@RequestBody Product product) {
-
+        if(product.getPrix()==0)
+            throw new ProduitGratuitException("0€ n'est pas un bon prix de vente ! nom du produit : "+ product.getNom());
         productDao.save(product);
     }
 
