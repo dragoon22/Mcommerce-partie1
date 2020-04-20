@@ -121,4 +121,9 @@ public class ProductController {
         return new ObjectMapper().writeValueAsString(productMargeMap);
     }
 
+    @GetMapping(value = "/ProduitsTrie")
+    public List<Product> trierProduitsParOrdreAlphabetique(){
+        return productDao.findByOrderByNomAsc();
+    }
+
 }
