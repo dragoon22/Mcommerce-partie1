@@ -3,6 +3,8 @@ package com.ecommerce.microcommerce.web.controller;
 import com.ecommerce.microcommerce.dao.ProductDao;
 import com.ecommerce.microcommerce.model.Product;
 import com.ecommerce.microcommerce.web.exceptions.ProduitIntrouvableException;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ser.FilterProvider;
 import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
@@ -16,10 +18,12 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import javax.validation.Valid;
 import java.net.URI;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-
-@Api( description="API pour es opérations CRUD sur les produits.")
+//Description est deprecated !
+@Api( description="API pour les opérations CRUD sur les produits.")
 
 @RestController
 public class ProductController {
@@ -103,6 +107,18 @@ public class ProductController {
         return productDao.chercherUnProduitCher(400);
     }
 
-
+    //Methode admin pour la recuperation de la marge par produit
+    @GetMapping(value = "/AdminProduits")
+    public String calculerMargeProduit() throws JsonProcessingException {
+        Map<Product, Integer> productMargeMap = new HashMap<>();
+        List<Product> productList = productDao.findAll();
+        for (Product product : productList) {
+            //le prix d'achat est frocement inferieur au prix
+            //pas le droit de vendre a perte .... ;)
+            int marge = product.getPrix() - product.getPrixAchat();
+            productMargeMap.put(product, marge);
+        }
+        return new ObjectMapper().writeValueAsString(productMargeMap);
+    }
 
 }
