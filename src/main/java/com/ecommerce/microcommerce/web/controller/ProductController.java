@@ -114,8 +114,8 @@ public class ProductController {
 
     //Methode admin pour la recuperation de la marge par produit
     @GetMapping(value = "/AdminProduits")
-    public String calculerMargeProduit() throws JsonProcessingException {
-        Map<Product, Integer> productMargeMap = new HashMap<>();
+    public HashMap<Product,Integer> calculerMargeProduit() throws JsonProcessingException {
+        HashMap<Product, Integer> productMargeMap = new HashMap<>();
         List<Product> productList = productDao.findAll();
         for (Product product : productList) {
             //le prix d'achat est frocement inferieur au prix
@@ -123,7 +123,7 @@ public class ProductController {
             int marge = product.getPrix() - product.getPrixAchat();
             productMargeMap.put(product, marge);
         }
-        return new ObjectMapper().writeValueAsString(productMargeMap);
+        return productMargeMap;
     }
 
     @GetMapping(value = "/ProduitsTrie")
